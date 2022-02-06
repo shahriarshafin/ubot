@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
+import SpeechRecognition, {
+	useSpeechRecognition,
+} from 'react-speech-recognition';
 import styled from 'styled-components';
 import { BotText, UserText } from '../components';
 
@@ -7,12 +10,35 @@ export default function Home() {
 	const [userInput, setUserInput] = useState('');
 	const [userData, setUserData] = useState([]);
 	const [fetchData, setFetchData] = useState('Hi, I am Ubot 😊');
+	const {
+		transcript,
+		listening,
+		resetTranscript,
+		isMicrophoneAvailable,
+		browserSupportsSpeechRecognition,
+	} = useSpeechRecognition();
+
+	useEffect(() => {
+		setUserInput(transcript);
+	}, [transcript]);
+
+	const recStart = () => {
+		SpeechRecognition.startListening({ language: 'en-IN' });
+	};
+
+	const handleChange = (e) => {
+		setUserInput(e.target.value);
+	};
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		setUserInput('');
-		getStaticProps();
-		createArr();
+		if (userInput === '') {
+			return;
+		} else {
+			setUserInput('');
+			getStaticProps();
+			createArr();
+		}
 	};
 
 	const getStaticProps = async () => {
@@ -27,6 +53,14 @@ export default function Home() {
 		const newArray = [...userData, newRecord];
 		setUserData(newArray);
 	};
+
+	if (!isMicrophoneAvailable) {
+		console.log('Microphone is not available');
+	}
+
+	if (!browserSupportsSpeechRecognition) {
+		return <span>Browser does support speech recognition.</span>;
+	}
 
 	return (
 		<>
@@ -43,7 +77,7 @@ export default function Home() {
 
 					<form action='' onSubmit={handleSubmit}>
 						<input
-							onChange={(e) => setUserInput(e.target.value)}
+							onChange={handleChange}
 							value={userInput}
 							name='userInput'
 							type='text'
@@ -54,6 +88,14 @@ export default function Home() {
 						</button>
 					</form>
 				</Discussion>
+
+				<div>
+					<p>Microphone: {listening ? 'on' : 'off'}</p>
+					<button onClick={recStart}>Start</button>
+					<button onClick={SpeechRecognition.stopListening}>Stop</button>
+					<button onClick={resetTranscript}>Reset</button>
+					<p>{transcript}</p>
+				</div>
 			</Container>
 		</>
 	);
@@ -65,10 +107,3 @@ const Discussion = styled.div`
 	display: flex;
 	flex-flow: column wrap;
 `;
-
-const getStaticProps = async () => {
-	const response = await fetch(`http://localhost:3000/conv`);
-	const data = await response.json();
-	// setFetchData(data[0].title);
-	console.log(data[Math.floor(Math.random() * 26) + 1].text);
-};
