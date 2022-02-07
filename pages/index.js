@@ -18,21 +18,14 @@ export default function Home() {
 		browserSupportsSpeechRecognition,
 	} = useSpeechRecognition();
 
-	useEffect(() => {
-		setUserInput(transcript);
-	}, [transcript]);
-
-	const recStart = () => {
-		SpeechRecognition.startListening({ language: 'en-IN' });
-	};
-
 	const handleChange = (e) => {
 		setUserInput(e.target.value);
 	};
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		if (userInput === '') {
+
+		if (userInput.replace(/\s{2,}/g, ' ').trim() === '') {
 			return;
 		} else {
 			setUserInput('');
@@ -49,10 +42,28 @@ export default function Home() {
 	};
 
 	const createArr = () => {
-		const newRecord = { userInput, fetchData };
+		const getTime = () => {
+			return new Date().toLocaleString('en-US', {
+				hour: 'numeric',
+				minute: 'numeric',
+				hour12: true,
+			});
+		};
+		const timeNow = getTime();
+		const newRecord = { userInput, fetchData, timeNow };
+		// console.log(newRecord);
 		const newArray = [...userData, newRecord];
 		setUserData(newArray);
+		console.table(newArray);
 	};
+
+	const recStart = () => {
+		SpeechRecognition.startListening({ language: 'en-IN' });
+	};
+
+	useEffect(() => {
+		setUserInput(transcript);
+	}, [transcript]);
 
 	if (!isMicrophoneAvailable) {
 		console.log('Microphone is not available');
@@ -69,8 +80,8 @@ export default function Home() {
 					{userData.map((item, index) => {
 						return (
 							<>
-								<UserText key={index} text={item.userInput} />
-								<BotText text={item.fetchData} />
+								<UserText text={item.userInput} time={item.timeNow} />
+								<BotText text={item.fetchData} time={item.timeNow} />
 							</>
 						);
 					})}
@@ -83,7 +94,15 @@ export default function Home() {
 							type='text'
 							autoComplete='off'
 						/>
-						<button type='submit' className='mx-3 btn btn-success'>
+
+						<button
+							type='submit'
+							className={
+								userInput.replace(/\s{2,}/g, ' ').trim() === ''
+									? 'mx-3 btn btn-light'
+									: 'mx-3 btn btn-success'
+							}
+						>
 							Send
 						</button>
 					</form>
