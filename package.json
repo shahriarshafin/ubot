@@ -18,7 +18,8 @@
 		"react-icons": "^4.3.1",
 		"react-speech-recognition": "^3.9.0",
 		"regenerator-runtime": "^0.13.9",
-		"styled-components": "^5.3.3"
+		"styled-components": "^5.3.3",
+		"use-sound": "^4.0.1"
 	},
 	"devDependencies": {
 		"eslint": "8.8.0",

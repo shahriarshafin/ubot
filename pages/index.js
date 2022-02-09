@@ -4,9 +4,15 @@ import SpeechRecognition, {
 	useSpeechRecognition,
 } from 'react-speech-recognition';
 import styled from 'styled-components';
+import useSound from 'use-sound';
 import { BotTyping, IsBot, IsUser } from '../components';
 
+const SendSoundUrl = '/sounds/boop.mp3';
+const MicSoundUrl = '/sounds/tap.mp3';
+
 export default function Home() {
+	const [playMsgSend] = useSound(SendSoundUrl);
+	const [playMicRec] = useSound(MicSoundUrl);
 	const [userInput, setUserInput] = useState('');
 	const [userData, setUserData] = useState([]);
 	const [fetchData, setFetchData] = useState(
@@ -15,7 +21,6 @@ export default function Home() {
 	const {
 		transcript,
 		listening,
-		resetTranscript,
 		isMicrophoneAvailable,
 		browserSupportsSpeechRecognition,
 	} = useSpeechRecognition();
@@ -31,8 +36,11 @@ export default function Home() {
 			return;
 		} else {
 			setUserInput('');
+			setTimeout(() => {
+				createArr();
+			}, 1200);
 			getStaticProps();
-			createArr();
+			playMsgSend();
 		}
 	};
 
@@ -60,6 +68,7 @@ export default function Home() {
 	};
 
 	const recStart = () => {
+		playMicRec();
 		if (listening) {
 			SpeechRecognition.stopListening();
 		} else {
@@ -76,14 +85,12 @@ export default function Home() {
 	}
 
 	if (!browserSupportsSpeechRecognition) {
-		return <span>Browser does support speech recognition.</span>;
+		return <h1>Browser does support speech recognition.</h1>;
 	}
 
 	return (
 		<>
-			{/* <button onClick={resetTranscript}>Reset</button> */}
 			<p>{transcript}</p>
-
 			<div className='chatbot'>
 				<div className='chatbot__header'>
 					<p>
@@ -100,6 +107,9 @@ export default function Home() {
 							return (
 								<>
 									<IsUser message={item.userInput} />
+
+									<BotTyping />
+
 									<IsBot message={item.fetchData} />
 								</>
 							);
