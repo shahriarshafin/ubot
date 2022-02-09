@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoClose, IoEllipse, IoMic, IoSend } from 'react-icons/io5';
 import SpeechRecognition, {
 	useSpeechRecognition,
@@ -11,6 +11,7 @@ const SendSoundUrl = '/sounds/boop.mp3';
 const MicSoundUrl = '/sounds/tap.mp3';
 
 export default function Home() {
+	const messagesEndRef = useRef(null);
 	const [playMsgSend] = useSound(SendSoundUrl);
 	const [playMicRec] = useSound(MicSoundUrl);
 	const [userInput, setUserInput] = useState('');
@@ -66,7 +67,6 @@ export default function Home() {
 		setUserData(newArray);
 		console.table(newArray);
 	};
-
 	const recStart = () => {
 		playMicRec();
 		if (listening) {
@@ -76,9 +76,15 @@ export default function Home() {
 		}
 	};
 
+	const scrollToBottom = () => {
+		messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+	};
+
 	useEffect(() => {
 		setUserInput(transcript);
 	}, [transcript]);
+
+	useEffect(scrollToBottom, [userData]);
 
 	if (!isMicrophoneAvailable) {
 		console.log('Microphone is not available');
@@ -115,6 +121,7 @@ export default function Home() {
 							);
 						})}
 					</ul>
+					<div ref={messagesEndRef} />
 				</div>
 
 				<form action='' onSubmit={handleSubmit}>

@@ -57,6 +57,11 @@ font-family: "Open Sans", sans-serif;
   background-color: #fff;
   overflow-x: none;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+
+  }
 }
 
 @media screen and (min-width: 640px) {
