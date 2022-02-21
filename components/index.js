@@ -1,4 +1,5 @@
-import BotTyping from './BotTyping';
-import IsBot from './IsBot';
-import IsUser from './IsUser';
-export { IsUser, IsBot, BotTyping };
+export { default as BotTyping } from './BotTyping';
+export { default as HeroSlider } from './HeroSlider';
+export { default as IsBot } from './IsBot';
+export { default as IsUser } from './IsUser';
+export { default as Nav } from './Nav';

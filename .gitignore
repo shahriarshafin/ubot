@@ -7,6 +7,8 @@
 
 # testing
 /coverage
+/pages/test.jsx
+notes.md
 
 # next.js
 /.next/
