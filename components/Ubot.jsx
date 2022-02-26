@@ -12,6 +12,11 @@ const MicSoundUrl = '/sounds/tap.mp3';
 
 export default function Home() {
 	const messagesEndRef = useRef(null);
+	// test
+	const [userArr, setUserArr] = useState([]);
+	const [botArr, setBotArr] = useState([]);
+	// test
+
 	const [playMsgSend] = useSound(SendSoundUrl);
 	const [playMicRec] = useSound(MicSoundUrl);
 	const [userInput, setUserInput] = useState('');
@@ -26,10 +31,6 @@ export default function Home() {
 		browserSupportsSpeechRecognition,
 	} = useSpeechRecognition();
 
-	const handleChange = (e) => {
-		setUserInput(e.target.value);
-	};
-
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
@@ -37,22 +38,50 @@ export default function Home() {
 			return;
 		} else {
 			setUserInput('');
-			setTimeout(() => {
-				createArr();
-			}, 1200);
-			getStaticProps();
+			getMessage();
+			createArr();
+			postMessage();
 			playMsgSend();
 		}
 	};
-
-	const getStaticProps = async () => {
+	const postMessage = () => {
+		const conversation = userInput;
+		fetch('http://localhost:4000/conv', {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ conversation }),
+		}).then((resp) => {
+			// console.log('ress', resp);
+			resp.json().then((result) => {
+				// console.log('result', result);
+			});
+		});
+	};
+	const getMessage = async () => {
 		const response = await fetch(`http://localhost:4000/conv`);
 		const data = await response.json();
-		setFetchData(data[Math.floor(Math.random() * 26) + 1].text);
+		setFetchData(data[0].conversation);
 		// console.log(data[0].text);
 	};
 
 	const createArr = () => {
+		// .....// test user msg.......
+		const newRec = { userInput };
+		const newArr = [...userArr, newRec];
+		setUserArr(newArr);
+		// console.log(newArr);
+		// .....// test user msg.......
+
+		// .....// test bot msg.......
+		const newBotRec = { fetchData };
+		const newBotArr = [...botArr, newBotRec];
+		setBotArr(newBotArr);
+		// console.log(newBotArr);
+		// .....// test bot msg.......
+
 		const getTime = () => {
 			return new Date().toLocaleString('en-US', {
 				hour: 'numeric',
@@ -65,7 +94,7 @@ export default function Home() {
 		// console.log(newRecord);
 		const newArray = [...userData, newRecord];
 		setUserData(newArray);
-		console.table(newArray);
+		// console.table(newArray);
 	};
 	const recStart = () => {
 		playMicRec();
@@ -108,18 +137,59 @@ export default function Home() {
 				</Header>
 				<MessageWindow>
 					<ul className='chatbot__messages'>
-						<BotTyping />
-						{userData.map((item, index) => {
+						{/* {userData.map((item, index) => {
 							return (
 								<>
 									<IsUser message={item.userInput} />
 
 									<BotTyping />
 
-									<IsBot message={item.fetchData} />
+									<IsBot message={()} />
+								</>
+							);
+						})} */}
+						{/* <BotTyping />
+						<IsBot message={'uuu'} />
+						<IsUser message={'BBB'} /> */}
+
+						{/* .......combiners */}
+						{userArr.map((item, index) => {
+							return (
+								<>
+									<IsUser message={item.userInput} />
+
+									{userArr.length - 1 === index ? <BotTyping /> : null}
+
+									<IsBot message={botArr[index].fetchData} />
 								</>
 							);
 						})}
+
+						{/* {botArr.map((item, index) => {
+							return (
+								<>
+									<IsBot message={item.fetchData} />
+								</>
+							);
+						})} */}
+
+						{/* .......combiners */}
+
+						{/* {userArr.map((item, index) => {
+							return (
+								<>
+									<IsUser message={item.userInput} />
+								</>
+							);
+						})} */}
+
+						{/* {botArr.map((item, index) => {
+							return (
+								<>
+									<IsBot message={item.fetchData} />
+								</>
+							);
+						})} */}
 					</ul>
 					<div ref={messagesEndRef} />
 				</MessageWindow>
@@ -127,7 +197,7 @@ export default function Home() {
 				<form action='' onSubmit={handleSubmit}>
 					<div className='chatbot__entry'>
 						<input
-							onChange={handleChange}
+							onChange={(e) => setUserInput(e.target.value)}
 							value={userInput}
 							name='userInput'
 							type='text'
