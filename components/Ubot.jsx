@@ -40,7 +40,7 @@ export default function Home() {
 			setUserInput('');
 			getMessage();
 			createArr();
-			postMessage();
+			// postMessage();
 			playMsgSend();
 		}
 	};
@@ -61,7 +61,7 @@ export default function Home() {
 		});
 	};
 	const getMessage = async () => {
-		const response = await fetch(`http://localhost:4000/conv`);
+		const response = await fetch(`http://localhost:4000/${userInput}`);
 		const data = await response.json();
 		setFetchData(data[0].conversation);
 		// console.log(data[0].text);
