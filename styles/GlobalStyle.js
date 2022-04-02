@@ -37,6 +37,12 @@ background-color: #F0F0F0;
 .chatbot__messages li .is-ai__profile-picture {
   margin-right: 8px;
 }
+.chatbot__messages li .is-ai__profile-picture img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
 
 .chatbot__message {
   display: inline-block;
