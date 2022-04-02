@@ -12,6 +12,7 @@ const MicSoundUrl = '/sounds/tap.mp3';
 
 export default function Home() {
 	const messagesEndRef = useRef(null);
+	const [active, setActive] = useState(false);
 	// test
 	const [userArr, setUserArr] = useState([]);
 	const [botArr, setBotArr] = useState([]);
@@ -127,7 +128,7 @@ export default function Home() {
 		<>
 			<p>{transcript}</p>
 			<BotWrapper>
-				<Header>
+				<Header onClick={() => setActive(active == false ? true : false)}>
 					<p>
 						<strong>Got a question?</strong>
 					</p>
@@ -135,7 +136,7 @@ export default function Home() {
 						<IoClose />
 					</CloseBtn>
 				</Header>
-				<MessageWindow>
+				<MessageWindow className={active == false ? 'd-none' : 'd-block'}>
 					<ul className='chatbot__messages'>
 						{/* {userData.map((item, index) => {
 							return (
@@ -194,7 +195,11 @@ export default function Home() {
 					<div ref={messagesEndRef} />
 				</MessageWindow>
 
-				<form action='' onSubmit={handleSubmit}>
+				<form
+					action=''
+					onSubmit={handleSubmit}
+					className={active == false ? 'd-none' : 'd-block'}
+				>
 					<div className='chatbot__entry'>
 						<input
 							onChange={(e) => setUserInput(e.target.value)}
@@ -254,8 +259,11 @@ const Header = styled.div`
 	border-radius: 5px 5px 0px 0px;
 	transition: background-color 0.2s ease;
 	border-bottom: 3px solid #94caf1;
+	p {
+		margin: 0;
+	}
 	&:hover {
-		background-color: #393285;
+		background-color: #0f3c7e;
 	}
 `;
 const CloseBtn = styled.div`
