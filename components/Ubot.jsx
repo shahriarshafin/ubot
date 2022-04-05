@@ -1,10 +1,13 @@
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { Alert, Button } from 'react-bootstrap';
 import { IoClose, IoEllipse, IoMic, IoSend } from 'react-icons/io5';
 import SpeechRecognition, {
 	useSpeechRecognition,
 } from 'react-speech-recognition';
 import styled from 'styled-components';
 import useSound from 'use-sound';
+import botLogo from '../assets/images/botLogo.png';
 import { BotTyping, IsBot, IsUser } from './';
 
 const SendSoundUrl = '/sounds/boop.mp3';
@@ -12,11 +15,9 @@ const MicSoundUrl = '/sounds/tap.mp3';
 
 export default function Home() {
 	const messagesEndRef = useRef(null);
-	const [active, setActive] = useState(false);
-	// test
-	const [userArr, setUserArr] = useState([]);
-	const [botArr, setBotArr] = useState([]);
-	// test
+
+	const [botOpen, setBotOpen] = useState(false);
+	const [showIntro, setShowIntro] = useState(true);
 
 	const [playMsgSend] = useSound(SendSoundUrl);
 	const [playMicRec] = useSound(MicSoundUrl);
@@ -25,6 +26,10 @@ export default function Home() {
 	const [fetchData, setFetchData] = useState(
 		'Hi, I am Ubot 😊. How can I help you?'
 	);
+	// test
+	const [userArr, setUserArr] = useState([]);
+	const [botArr, setBotArr] = useState([]);
+	// test
 	const {
 		transcript,
 		listening,
@@ -41,31 +46,27 @@ export default function Home() {
 			setUserInput('');
 			getMessage();
 			createArr();
-			// postMessage();
 			playMsgSend();
 		}
 	};
-	const postMessage = () => {
-		const conversation = userInput;
-		fetch('http://localhost:4000/conv', {
-			method: 'POST',
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ conversation }),
-		}).then((resp) => {
-			// console.log('ress', resp);
-			resp.json().then((result) => {
-				// console.log('result', result);
-			});
-		});
-	};
+
 	const getMessage = async () => {
-		const response = await fetch(`http://localhost:4000/${userInput}`);
+		const response = await fetch(
+			// `http://192.168.84.134:8080/predict/${userInput}`
+			`http://localhost:4000/${userInput}`
+		);
 		const data = await response.json();
-		setFetchData(data[0].conversation);
-		// console.log(data[0].text);
+
+		// create new arr from get data
+		const newArr = [...userData, data[0].conversation];
+		setUserData(newArr);
+		console.table(newArr);
+		console.log(newArr[newArr.length - 1]);
+
+		// setFetchData(data[0].conversation);
+		setFetchData(newArr[newArr.length - 1]);
+		console.log('fet', fetchData);
+		// console.log(data[0].conversation);
 	};
 
 	const createArr = () => {
@@ -83,16 +84,8 @@ export default function Home() {
 		// console.log(newBotArr);
 		// .....// test bot msg.......
 
-		const getTime = () => {
-			return new Date().toLocaleString('en-US', {
-				hour: 'numeric',
-				minute: 'numeric',
-				hour12: true,
-			});
-		};
-		const timeNow = getTime();
-		const newRecord = { userInput, fetchData, timeNow };
-		// console.log(newRecord);
+		const newRecord = { userInput, fetchData };
+		console.log(newRecord);
 		const newArray = [...userData, newRecord];
 		setUserData(newArray);
 		// console.table(newArray);
@@ -126,9 +119,8 @@ export default function Home() {
 
 	return (
 		<>
-			<p>{transcript}</p>
 			<BotWrapper>
-				<Header onClick={() => setActive(active == false ? true : false)}>
+				<Header onClick={() => setBotOpen(botOpen == false ? true : false)}>
 					<p>
 						<strong>Got a question?</strong>
 					</p>
@@ -136,8 +128,37 @@ export default function Home() {
 						<IoClose />
 					</CloseBtn>
 				</Header>
-				<MessageWindow className={active == false ? 'd-none' : 'd-block'}>
+				<MessageWindow className={botOpen == false ? 'd-none' : 'd-block'}>
 					<ul className='chatbot__messages'>
+						<Alert show={showIntro} variant='success'>
+							<div className='d-flex align-items-center'>
+								<Image
+									src={botLogo}
+									height={44}
+									width={44}
+									alt='bot-logo'
+								></Image>
+								<Alert.Heading className='ms-2 mt-2'>
+									Hello I&apos;m Ubot.
+								</Alert.Heading>
+							</div>
+							<p>
+								I am an artificial intelligence-powered virtual assistant. I can
+								find university related information, provide important links,
+								assist you to apply, payment and more. How can I help you today?
+								Click the button below to wake me up!
+							</p>
+							<hr />
+							<div className='d-flex justify-content-end'>
+								<Button
+									onClick={() => setShowIntro(false)}
+									variant='outline-success'
+								>
+									Get Started
+								</Button>
+							</div>
+						</Alert>
+
 						{/* {userData.map((item, index) => {
 							return (
 								<>
@@ -198,7 +219,7 @@ export default function Home() {
 				<form
 					action=''
 					onSubmit={handleSubmit}
-					className={active == false ? 'd-none' : 'd-block'}
+					className={botOpen == false ? 'd-none' : 'd-block'}
 				>
 					<div className='chatbot__entry'>
 						<input
@@ -239,6 +260,7 @@ const BotWrapper = styled.div`
 	width: 100%;
 	border-radius: 5px;
 	box-shadow: 0 -6px 99px -17px rgba(0, 0, 0, 0.68);
+	z-index: 99;
 
 	@media screen and (min-width: 640px) {
 		max-width: 420px;
