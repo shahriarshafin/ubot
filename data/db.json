@@ -1,7 +1,43 @@
 {
-	"conv": [
+	"who": [
 		{
 			"conversation": "I am Ubot 🤖",
+			"id": 1
+		}
+	],
+	"how": [
+		{
+			"conversation": "emnei",
+			"id": 1
+		}
+	],
+	"where": [
+		{
+			"conversation": "UAP te",
+			"id": 1
+		}
+	],
+	"when": [
+		{
+			"conversation": "ekhoni",
+			"id": 1
+		}
+	],
+	"what": [
+		{
+			"conversation": "kichuna",
+			"id": 1
+		}
+	],
+	"why": [
+		{
+			"conversation": "Janina",
+			"id": 1
+		}
+	],
+	"link": [
+		{
+			"conversation": "visit the website https://cse.uap-bd.edu/ if you want to know more info mail at dao.cse@uap-bd.edu",
 			"id": 1
 		}
 	]
