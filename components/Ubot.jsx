@@ -8,7 +8,7 @@ import SpeechRecognition, {
 import styled from 'styled-components';
 import useSound from 'use-sound';
 import botLogo from '../assets/images/botLogo.png';
-import { BotTyping, IsBot, IsUser } from './';
+import { IsBot, IsUser } from './';
 
 const SendSoundUrl = '/sounds/boop.mp3';
 const MicSoundUrl = '/sounds/tap.mp3';
@@ -17,6 +17,7 @@ export default function Home() {
 	const messagesEndRef = useRef(null);
 
 	const [botOpen, setBotOpen] = useState(false);
+	const [inputOpen, setInputOpen] = useState(false);
 	const [showIntro, setShowIntro] = useState(true);
 
 	const [playMsgSend] = useSound(SendSoundUrl);
@@ -50,12 +51,22 @@ export default function Home() {
 		}
 	};
 
+	useEffect(() => {
+		async function fetchData() {
+			const res = await fetch(`http://localhost:4000/${userInput}`);
+			const data = await res.json();
+			setFetchData(data[0].conversation);
+			console.log(data[0].conversation);
+		}
+		fetchData();
+	}, [userInput]);
+
 	const getMessage = async () => {
-		const response = await fetch(
-			// `http://192.168.84.134:8080/predict/${userInput}`
-			`http://localhost:4000/${userInput}`
-		);
-		const data = await response.json();
+		// const response = await fetch(
+		// 	// `http://192.168.84.134:8080/predict/${userInput}`
+		// 	`http://localhost:4000/${userInput}`
+		// );
+		// const data = await response.json();
 
 		// create new arr from get data
 		const newArr = [...userData, data[0].conversation];
@@ -144,14 +155,17 @@ export default function Home() {
 							</div>
 							<p>
 								I am an artificial intelligence-powered virtual assistant. I can
-								find university related information, provide important links,
-								assist you to apply, payment and more. How can I help you today?
-								Click the button below to wake me up!
+								find university-related information, provide important links,
+								help you apply, pay, and more. How can I help you today? Click
+								the button below to wake me up!
 							</p>
 							<hr />
 							<div className='d-flex justify-content-end'>
 								<Button
-									onClick={() => setShowIntro(false)}
+									onClick={() => {
+										setShowIntro(false);
+										setInputOpen(true);
+									}}
 									variant='outline-success'
 								>
 									Get Started
@@ -180,7 +194,7 @@ export default function Home() {
 								<>
 									<IsUser message={item.userInput} />
 
-									{userArr.length - 1 === index ? <BotTyping /> : null}
+									{/* {userArr.length - 1 === index ? <BotTyping /> : null} */}
 
 									<IsBot message={botArr[index].fetchData} />
 								</>
@@ -221,7 +235,11 @@ export default function Home() {
 					onSubmit={handleSubmit}
 					className={botOpen == false ? 'd-none' : 'd-block'}
 				>
-					<div className='chatbot__entry'>
+					<div
+						className={
+							inputOpen == false ? 'chatbot__entry  d-none' : 'chatbot__entry'
+						}
+					>
 						<input
 							onChange={(e) => setUserInput(e.target.value)}
 							value={userInput}
