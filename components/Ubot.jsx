@@ -52,21 +52,21 @@ export default function Home() {
 	};
 
 	useEffect(() => {
-		async function fetchData() {
+		(async () => {
 			const res = await fetch(`http://localhost:4000/${userInput}`);
 			const data = await res.json();
-			setFetchData(data[0].conversation);
-			console.log(data[0].conversation);
-		}
-		fetchData();
+			const reply = data[0].conversation;
+			setFetchData(reply);
+			// console.log('reply in effect--> ',replyn);
+		})();
 	}, [userInput]);
 
 	const getMessage = async () => {
-		// const response = await fetch(
-		// 	// `http://192.168.84.134:8080/predict/${userInput}`
-		// 	`http://localhost:4000/${userInput}`
-		// );
-		// const data = await response.json();
+		const response = await fetch(
+			// `http://192.168.84.134:8080/predict/${userInput}`
+			`http://localhost:4000/${userInput}`
+		);
+		const data = await response.json();
 
 		// create new arr from get data
 		const newArr = [...userData, data[0].conversation];
@@ -76,7 +76,7 @@ export default function Home() {
 
 		// setFetchData(data[0].conversation);
 		setFetchData(newArr[newArr.length - 1]);
-		console.log('fet', fetchData);
+		// console.log('fet', fetchData);
 		// console.log(data[0].conversation);
 	};
 
