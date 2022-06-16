@@ -51,21 +51,18 @@ export default function Home() {
 		}
 	};
 
-	useEffect(() => {
-		(async () => {
-			const res = await fetch(`http://localhost:4000/${userInput}`);
-			const data = await res.json();
-			const reply = data[0].conversation;
-			setFetchData(reply);
-			// console.log('reply in effect--> ',replyn);
-		})();
-	}, [userInput]);
+	// useEffect(() => {
+	// 	(async () => {
+	// 		const res = await fetch(`http://localhost:4000/${userInput}`);
+	// 		const data = await res.json();
+	// 		const reply = data[0].conversation;
+	// 		setFetchData(reply);
+	// 		// console.log('reply in effect--> ',replyn);
+	// 	})();
+	// }, [userInput]);
 
 	const getMessage = async () => {
-		const response = await fetch(
-			// `http://192.168.84.134:8080/predict/${userInput}`
-			`http://localhost:4000/${userInput}`
-		);
+		const response = await fetch(`http://localhost:4000/${userInput}`);
 		const data = await response.json();
 
 		// create new arr from get data
